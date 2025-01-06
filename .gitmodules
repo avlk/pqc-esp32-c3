@@ -1,0 +1,8 @@
+[submodule "lib/Arduino-wolfSSL"]
+	path = lib/Arduino-wolfSSL
+	url = https://github.com/avlk/Arduino-wolfSSL.git
+	branch = 5.7.4
+[submodule "lib/liboqs"]
+	path = lib/liboqs
+	url = https://github.com/open-quantum-safe/liboqs.git
+	branch = 0.10.1-release
