@@ -1,0 +1,18 @@
+{
+    "name": "ml_dsa_65_ipd_ref",
+    "version": "0.10.1",
+    "build": {
+        "flags": [
+            "-I../liboqs/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref>",
+            "-I../liboqs/src/sig/ml_dsa>",
+            "-DDILITHIUM_MODE=3",
+            "-I../liboqs/src/common/pqclean_shims",
+            "-ffunction-sections",
+            "-fdata-sections"
+        ],
+        "srcFilter": [
+            "+<../liboqs/src/sig/ml_dsa/pqcrystals-dilithium-standard_ml-dsa-65-ipd_ref/*.c>",
+            "+<../liboqs/src/sig/ml_dsa/sig_ml_dsa_65_ipd.c>"
+        ]
+    }
+}

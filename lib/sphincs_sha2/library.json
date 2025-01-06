@@ -1,0 +1,17 @@
+{
+    "name": "sphincs_sha2",
+    "version": "0.10.1",
+    "build": {
+        "flags": [
+            "-I.",
+            "-I../liboqs/src/sig/sphincs>",
+            "-I../liboqs/src/common/pqclean_shims",
+            "-ffunction-sections",
+            "-fdata-sections"
+        ],
+        "srcFilter": [
+            "+<../liboqs/src/sig/sphincs/pqclean_sphincs-sha2-*-simple_clean/*.c>",
+            "+<../liboqs/src/sig/sphincs/sig_sphincs_sha2_*_simple.c>"
+        ]
+    }
+}

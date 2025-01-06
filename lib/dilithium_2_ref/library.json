@@ -1,0 +1,19 @@
+{
+    "name": "dilithium_2_ref",
+    "version": "0.10.1",
+    "build": {
+        "flags": [
+            "-I../liboqs/src/sig/dilithium/pqcrystals-dilithium_dilithium2_ref>",
+            "-I../liboqs/src/sig/dilithium>",
+            "-DDILITHIUM_MODE=2",
+            "-DDILITHIUM_RANDOMIZED_SIGNING",
+            "-I../liboqs/src/common/pqclean_shims",
+            "-ffunction-sections",
+            "-fdata-sections"
+        ],
+        "srcFilter": [
+            "+<../liboqs/src/sig/dilithium/pqcrystals-dilithium_dilithium2_ref/*.c>",
+            "+<../liboqs/src/sig/dilithium/sig_dilithium_2.c>"
+        ]
+    }
+}

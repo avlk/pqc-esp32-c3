@@ -1,0 +1,18 @@
+{
+    "name": "kyber_768_ref",
+    "version": "0.10.1",
+    "build": {
+        "flags": [
+            "-I../liboqs/src/kem/kyber/pqcrystals-kyber_768_ref>",
+            "-I../liboqs/src/kem/kyber>",
+            "-DKYBER_K=3",
+            "-I../liboqs/src/common/pqclean_shims",
+            "-ffunction-sections",
+            "-fdata-sections"
+        ],
+        "srcFilter": [
+            "+<../liboqs/src/kem/kyber/pqcrystals-kyber_kyber768_ref/*.c>",
+            "+<../liboqs/src/kem/kyber/kem_kyber_768.c>"
+        ]
+    }
+}

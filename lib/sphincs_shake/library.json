@@ -1,0 +1,17 @@
+{
+    "name": "sphincs_shake",
+    "version": "0.10.1",
+    "build": {
+        "flags": [
+            "-I.",
+            "-I../liboqs/src/sig/sphincs>",
+            "-I../liboqs/src/common/pqclean_shims",
+            "-ffunction-sections",
+            "-fdata-sections"
+        ],
+        "srcFilter": [
+            "+<../liboqs/src/sig/sphincs/pqclean_sphincs-shake-*-simple_clean/*.c>",
+            "+<../liboqs/src/sig/sphincs/sig_sphincs_shake_*_simple.c>"
+        ]
+    }
+}

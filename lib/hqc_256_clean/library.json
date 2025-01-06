@@ -1,0 +1,17 @@
+{
+    "name": "hqc_256_clean",
+    "version": "0.10.1",
+    "build": {
+        "flags": [
+            "-I../liboqs/src/kem/hqc/pqclean_hqc-256_clean>",
+            "-I../liboqs/src/kem/hqc>",
+            "-I../liboqs/src/common/pqclean_shims",
+            "-ffunction-sections",
+            "-fdata-sections"
+        ],
+        "srcFilter": [
+            "+<../liboqs/src/kem/hqc/pqclean_hqc-256_clean/*.c>",
+            "+<../liboqs/src/kem/hqc/kem_hqc_256.c>"
+        ]
+    }
+}

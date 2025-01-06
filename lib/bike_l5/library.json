@@ -1,0 +1,32 @@
+{
+    "name": "bike_l5",
+    "version": "0.10.1",
+    "build": {
+        "flags": [
+            "-I../liboqs/src/kem/bike",
+            "-I../liboqs/src/kem/bike/additional_r4",
+            "-include functions_renaming.h",
+            "-DLEVEL=5",
+            "-DFUNC_PREFIX=OQS_KEM_bike_l5",
+            "-ffunction-sections",
+            "-fdata-sections"
+        ],
+        "srcFilter": [
+            "+<../liboqs/src/kem/kem_bike.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/decode.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/decode.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/decode_portable.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/error.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/gf2x_inv.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/gf2x_ksqr_portable.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/gf2x_mul.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/gf2x_mul_base_portable.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/gf2x_mul_portable.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/kem.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/shake_prf.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/sampling.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/sampling_portable.c>",
+            "+<../liboqs/src/kem/bike/additional_r4/utilities.c>"
+        ]
+    }
+}
