@@ -51,6 +51,9 @@ def install_oqs_headers():
 
     for src in headers:
         shutil.copy("lib/liboqs/src/"+src, install_dir)
+
+    shutil.copy("oqsconfig.in.h", install_dir)
+
     # os.chdir("lib/liboqs")
     # subprocess.run(["cmake", "-f", "CMakeConfig.txt"], shell=True, check=True)
 
