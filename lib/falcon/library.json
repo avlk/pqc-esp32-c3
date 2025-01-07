@@ -1,0 +1,16 @@
+{
+    "name": "falcon",
+    "version": "0.10.1",
+    "build": {
+        "flags": [
+            "-I.",
+            "-I../liboqs/src/common/pqclean_shims",
+            "-ffunction-sections",
+            "-fdata-sections"
+        ],
+        "srcFilter": [
+            "+<../liboqs/src/sig/falcon/*.c>",
+            "+<../liboqs/src/sig/falcon/*_clean/*.c>"
+        ]
+    }
+}

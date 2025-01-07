@@ -5,15 +5,10 @@ import subprocess
 
 liboqs_public_headers = [
     "oqs.h",
-#    "common/aes/aes_ops.h",
     "common/common.h",
     "common/rand/rand.h",
-#    "common/sha2/sha2_ops.h",
-#    "common/sha3/sha3_ops.h",
-#    "common/sha3/sha3x4_ops.h",
     "kem/kem.h",
     "sig/sig.h",
-    # "sig_stfl/sig_stfl.h",
     "kem/bike/kem_bike.h",
     "kem/frodokem/kem_frodokem.h",
     "kem/ntruprime/kem_ntruprime.h",
@@ -52,10 +47,8 @@ def install_oqs_headers():
     for src in headers:
         shutil.copy("lib/liboqs/src/"+src, install_dir)
 
-    shutil.copy("oqsconfig.in.h", install_dir)
-
-    # os.chdir("lib/liboqs")
-    # subprocess.run(["cmake", "-f", "CMakeConfig.txt"], shell=True, check=True)
+    shutil.copy("oqsconfig.in.h", install_dir + "/oqsconfig.h")
+    shutil.copy("liboqs-library.json", "lib/liboqs/library.json")
 
 
 install_oqs_headers()

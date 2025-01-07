@@ -3,7 +3,7 @@
     "version": "0.10.1",
     "build": {
         "flags": [
-            "-I../liboqs/src/kem/hqc/pqclean_hqc-128_clean>",
+            "-I../liboqs/src/kem/hqc/pqclean_hqc-128_clean",
             "-I../liboqs/src/kem/hqc>",
             "-I../liboqs/src/common/pqclean_shims",
             "-ffunction-sections",

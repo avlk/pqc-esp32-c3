@@ -1,0 +1,88 @@
+{
+    "name": "liboqs",
+    "version": "0.10.1",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/open-quantum-safe/liboqs.git"
+    },
+    "build": {
+        "flags": [
+            "-I.",
+            "-I src/common/pqclean_shims",
+            "-ffunction-sections",
+            "-fdata-sections"
+        ],
+        "srcFilter": [
+            "+<kem/kem.c>",
+            "+<sig/sig.c>"
+        ]
+    },
+    "dependencies": 
+    [
+        {
+            "name": "liboqs_common",
+            "version": "^0.10.1"
+        },
+        {
+            "name": "kyber_512_ref",
+            "version": "^0.10.1"
+        },
+        {
+            "name": "kyber_768_ref",
+            "version": "^0.10.1"
+        },
+        {
+            "name": "kyber_1024_ref",
+            "version": "^0.10.1"
+        },
+        {
+            "name": "ml_kem_512_ipd_ref",
+            "version": "^0.10.1"
+        },
+        {
+            "name": "ml_kem_768_ipd_ref",
+            "version": "^0.10.1"
+        },
+        {
+            "name": "ml_kem_1024_ipd_ref",
+            "version": "^0.10.1"
+        },
+        {
+            "name": "dilithium_2_ref",
+            "version": "^0.10.1"
+        },      
+        {
+            "name": "dilithium_3_ref",
+            "version": "^0.10.1"
+        },      
+        {
+            "name": "dilithium_5_ref",
+            "version": "^0.10.1"
+        },       
+        {
+            "name": "ml_dsa_44_ipd_ref",
+            "version": "^0.10.1"
+        },      
+        {
+            "name": "ml_dsa_65_ipd_ref",
+            "version": "^0.10.1"
+        },      
+        {
+            "name": "ml_dsa_87_ipd_ref",
+            "version": "^0.10.1"
+        },
+        {
+            "name": "sphincs_shake",
+            "version": "^0.10.1"
+        },
+        {
+            "name": "sphincs_sha2",
+            "version": "^0.10.1"
+        },
+        {
+            "name": "falcon",
+            "version": "^0.10.1"
+        }
+    ]
+}
