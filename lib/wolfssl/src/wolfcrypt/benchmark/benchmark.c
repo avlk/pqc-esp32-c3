@@ -13866,14 +13866,21 @@ void bench_sphincsKeySign(byte level, byte optim)
     sphincs_key key;
     double start;
     int    i, count;
-    byte   sig[SPHINCS_MAX_SIG_SIZE];
+    byte   *sig; // This array is to be for the embedded stack
     byte   msg[512];
     word32 x = 0;
     const char**desc = bench_desc_words[lng_index];
     DECLARE_MULTI_VALUE_STATS_VARS()
 
+    sig = malloc(SPHINCS_MAX_SIG_SIZE);
+    if (!sig) {
+        printf("malloc failed\n");
+        return;
+    }
+
     ret = wc_sphincs_init(&key);
     if (ret != 0) {
+        free(sig);
         printf("wc_sphincs_init failed %d\n", ret);
         return;
     }
@@ -14014,6 +14021,7 @@ void bench_sphincsKeySign(byte level, byte optim)
     }
 
     wc_sphincs_free(&key);
+    free(sig);
 }
 #endif /* HAVE_SPHINCS */
 
