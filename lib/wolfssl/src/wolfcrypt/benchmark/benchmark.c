@@ -1638,7 +1638,8 @@ static const char* bench_result_words3[][5] = {
 
 #if defined(USE_CERT_BUFFERS_1024) || defined(USE_CERT_BUFFERS_2048) || \
     defined(USE_CERT_BUFFERS_3072) || defined(USE_CERT_BUFFERS_4096) || \
-    !defined(NO_DH)
+    defined(HAVE_FALCON) || defined(HAVE_SPHINCS) || \
+    defined(HAVE_DILITHIUM) || !defined(NO_DH)
     /* include test cert and key buffers for use with NO_FILESYSTEM */
     #include <wolfssl/certs_test.h>
 #endif

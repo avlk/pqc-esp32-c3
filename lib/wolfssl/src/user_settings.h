@@ -721,7 +721,7 @@ Turn on timer debugging (used when CPU cycles not available)
         #ifdef USE_CERT_BUFFERS_1024
             #error "USE_CERT_BUFFERS_1024 is already defined. Pick one."
         #endif
-        #include <wolfssl/certs_test.h>
+        //#include <wolfssl/certs_test.h>
         #define CTX_CA_CERT          ca_cert_der_2048
         #define CTX_CA_CERT_SIZE     sizeof_ca_cert_der_2048
         #define CTX_CA_CERT_TYPE     WOLFSSL_FILETYPE_ASN1
