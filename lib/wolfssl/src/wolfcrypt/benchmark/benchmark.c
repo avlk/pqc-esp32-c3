@@ -3813,17 +3813,29 @@ static void* benchmarks_do(void* args)
 #endif
 #ifdef HAVE_SPHINCS
     if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_FAST_LEVEL1_SIGN))
-        bench_sphincsKeySign(1, FAST_VARIANT);
+        bench_sphincsKeySign(1, SPHINCS_FAST_SHA2);
     if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_FAST_LEVEL3_SIGN))
-        bench_sphincsKeySign(3, FAST_VARIANT);
+        bench_sphincsKeySign(3, SPHINCS_FAST_SHA2);
     if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_FAST_LEVEL5_SIGN))
-        bench_sphincsKeySign(5, FAST_VARIANT);
+        bench_sphincsKeySign(5, SPHINCS_FAST_SHA2);
     if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_SMALL_LEVEL1_SIGN))
-        bench_sphincsKeySign(1, SMALL_VARIANT);
+        bench_sphincsKeySign(1, SPHINCS_SMALL_SHA2);
     if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_SMALL_LEVEL3_SIGN))
-        bench_sphincsKeySign(3, SMALL_VARIANT);
+        bench_sphincsKeySign(3, SPHINCS_SMALL_SHA2);
     if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_SMALL_LEVEL5_SIGN))
-        bench_sphincsKeySign(5, SMALL_VARIANT);
+        bench_sphincsKeySign(5, SPHINCS_SMALL_SHA2);
+    if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_FAST_LEVEL1_SIGN))
+        bench_sphincsKeySign(1, SPHINCS_FAST_SHAKE);
+    if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_FAST_LEVEL3_SIGN))
+        bench_sphincsKeySign(3, SPHINCS_FAST_SHAKE);
+    if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_FAST_LEVEL5_SIGN))
+        bench_sphincsKeySign(5, SPHINCS_FAST_SHAKE);
+    if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_SMALL_LEVEL1_SIGN))
+        bench_sphincsKeySign(1, SPHINCS_SMALL_SHAKE);
+    if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_SMALL_LEVEL3_SIGN))
+        bench_sphincsKeySign(3, SPHINCS_SMALL_SHAKE);
+    if (bench_all || (bench_pq_asym_algs2 & BENCH_SPHINCS_SMALL_LEVEL5_SIGN))
+        bench_sphincsKeySign(5, SPHINCS_SMALL_SHAKE);
 #endif
 
 exit:
@@ -13649,7 +13661,7 @@ void bench_dilithiumKeySign(byte level)
     double start;
     int    i, count;
 #if !defined(WOLFSSL_DILITHIUM_NO_SIGN) || !defined(WOLFSSL_DILITHIUM_NO_VERIFY)
-    byte   sig[DILITHIUM_MAX_SIG_SIZE];
+    byte   *sig;
     byte   msg[512];
     word32 x = 0;
 #endif
@@ -13674,9 +13686,16 @@ void bench_dilithiumKeySign(byte level)
     }
 #endif
 
+    sig = malloc(DILITHIUM_MAX_SIG_SIZE);
+    if (!sig) {
+        printf("malloc failed\n");
+        return;
+    }
+
     ret = wc_dilithium_init(&key);
     if (ret != 0) {
         printf("wc_dilithium_init failed %d\n", ret);
+        free(sig);
         return;
     }
 
@@ -13692,6 +13711,8 @@ void bench_dilithiumKeySign(byte level)
             ret = wc_dilithium_make_key(&key, GLOBAL_RNG);
             if (ret != 0) {
                 printf("wc_dilithium_import_private_key failed %d\n", ret);
+                wc_dilithium_free(&key);
+                free(sig);
                 return;
             }
         }
@@ -13732,6 +13753,8 @@ void bench_dilithiumKeySign(byte level)
 #endif
     if (ret != 0) {
         printf("Failed to load private key\n");
+        wc_dilithium_free(&key);
+        free(sig);
         return;
     }
 
@@ -13815,6 +13838,8 @@ void bench_dilithiumKeySign(byte level)
 #endif
     if (ret != 0) {
         printf("Failed to load public key\n");
+        wc_dilithium_free(&key);
+        free(sig);
         return;
     }
 
@@ -13854,25 +13879,130 @@ void bench_dilithiumKeySign(byte level)
     #endif
     }
 #endif
-
     wc_dilithium_free(&key);
+    free(sig);
 }
 #endif /* HAVE_DILITHIUM */
 
 #ifdef HAVE_SPHINCS
-void bench_sphincsKeySign(byte level, byte optim)
+void bench_sphincsKeySign(byte level, sphincs_variant_t variant)
 {
     int    ret = 0;
     sphincs_key key;
     double start;
     int    i, count;
-    byte   *sig; // This array is to be for the embedded stack
+    byte   *sig = NULL;
     byte   msg[512];
-    word32 x = 0;
     const char**desc = bench_desc_words[lng_index];
+    byte optim;
+    word32 signature_size = 0;
+    const unsigned char *key_buf = NULL;
+    word32 key_size = 0;
+    char *variant_name = "";
+    byte hash_type;
     DECLARE_MULTI_VALUE_STATS_VARS()
 
-    sig = malloc(SPHINCS_MAX_SIG_SIZE);
+    switch (variant) {
+    case SPHINCS_FAST_SHA2:
+        optim = FAST_VARIANT;
+        hash_type = SPHINCS_SHA2;
+        variant_name = "SPHINCS-FAST-SHA2";
+        break;
+    case SPHINCS_FAST_SHAKE:
+        optim = FAST_VARIANT;
+        hash_type = SPHINCS_SHAKE;
+        variant_name = "SPHINCS-FAST-SHAKE";
+        break;
+    case SPHINCS_SMALL_SHA2:
+        optim = SMALL_VARIANT;
+        hash_type = SPHINCS_SHA2;
+        variant_name = "SPHINCS-SMALL-SHA2";
+        break;
+    case SPHINCS_SMALL_SHAKE:
+        optim = SMALL_VARIANT;
+        hash_type = SPHINCS_SHAKE;
+        variant_name = "SPHINCS-SMALL-SHAKE";
+        break;
+    default:
+        printf("Wrong signature variant\n");
+        return;
+    }
+
+    if (level == 1) {
+        switch (variant) {
+        case SPHINCS_FAST_SHA2:
+            signature_size = SPHINCS_FAST_LEVEL1_SIG_SIZE;
+            key_buf  = bench_sphincs_fast_sha2_level1_key;
+            key_size = sizeof_bench_sphincs_fast_sha2_level1_key;
+            break;
+        case SPHINCS_FAST_SHAKE:
+            signature_size = SPHINCS_FAST_LEVEL1_SIG_SIZE;
+            key_buf  = bench_sphincs_fast_level1_key;
+            key_size = sizeof_bench_sphincs_fast_level1_key;
+            break;
+        case SPHINCS_SMALL_SHA2:
+            signature_size = SPHINCS_SMALL_LEVEL1_SIG_SIZE;
+            key_buf  = bench_sphincs_small_sha2_level1_key;
+            key_size  = sizeof_bench_sphincs_small_sha2_level1_key;
+            break;
+        case SPHINCS_SMALL_SHAKE:
+            signature_size = SPHINCS_SMALL_LEVEL1_SIG_SIZE;
+            key_buf  = bench_sphincs_small_level1_key;
+            key_size  = sizeof_bench_sphincs_small_level1_key;
+            break;
+        }
+    } else if (level == 3) {
+        switch (variant) {
+        case SPHINCS_FAST_SHA2:
+            signature_size = SPHINCS_FAST_LEVEL3_SIG_SIZE;
+            key_buf  = bench_sphincs_fast_sha2_level3_key;
+            key_size = sizeof_bench_sphincs_fast_sha2_level3_key;
+            break;
+        case SPHINCS_FAST_SHAKE:
+            signature_size = SPHINCS_FAST_LEVEL3_SIG_SIZE;
+            key_buf  = bench_sphincs_fast_level3_key;
+            key_size = sizeof_bench_sphincs_fast_level3_key;
+            break;
+        case SPHINCS_SMALL_SHA2:
+            signature_size = SPHINCS_SMALL_LEVEL3_SIG_SIZE;
+            key_buf  = bench_sphincs_small_sha2_level3_key;
+            key_size = sizeof_bench_sphincs_small_sha2_level3_key;
+            break;
+        case SPHINCS_SMALL_SHAKE:
+            signature_size = SPHINCS_SMALL_LEVEL3_SIG_SIZE;
+            key_buf  = bench_sphincs_small_level3_key;
+            key_size = sizeof_bench_sphincs_small_level3_key;
+            break;
+        }
+    } else if (level == 5) {
+        switch (variant) {
+        case SPHINCS_FAST_SHA2:
+            signature_size = SPHINCS_FAST_LEVEL5_SIG_SIZE;
+            key_buf  = bench_sphincs_fast_sha2_level5_key;
+            key_size = sizeof_bench_sphincs_fast_sha2_level5_key;
+            break;
+        case SPHINCS_FAST_SHAKE:
+            signature_size = SPHINCS_FAST_LEVEL5_SIG_SIZE;
+            key_buf  = bench_sphincs_fast_level5_key;
+            key_size = sizeof_bench_sphincs_fast_level5_key;
+            break;
+        case SPHINCS_SMALL_SHA2:
+            signature_size = SPHINCS_SMALL_LEVEL5_SIG_SIZE;
+            key_buf  = bench_sphincs_small_sha2_level5_key;
+            key_size = sizeof_bench_sphincs_small_sha2_level5_key;
+            break;
+        case SPHINCS_SMALL_SHAKE:
+            signature_size = SPHINCS_SMALL_LEVEL5_SIG_SIZE;
+            key_buf  = bench_sphincs_small_level5_key;
+            key_size = sizeof_bench_sphincs_small_level5_key;
+            break;
+        }
+    } else {
+        printf("Invalid parameter!\n");
+        return;
+    }
+
+    sig = malloc(signature_size); // Allocates up to ~50kB 
     if (!sig) {
         printf("malloc failed\n");
         return;
@@ -13889,36 +14019,11 @@ void bench_sphincsKeySign(byte level, byte optim)
     if (ret != 0) {
         printf("wc_sphincs_set_level_and_optim() failed %d\n", ret);
     }
+    // Set hash type - outside of the normal API
+    key.hash = hash_type;
 
     if (ret == 0) {
-        ret = -1;
-        if ((level == 1) && (optim == FAST_VARIANT)) {
-            ret = wc_sphincs_import_private_key(bench_sphincs_fast_level1_key,
-                      sizeof_bench_sphincs_fast_level1_key, NULL, 0, &key);
-        }
-        else if ((level == 3) && (optim == FAST_VARIANT)) {
-            ret = wc_sphincs_import_private_key(bench_sphincs_fast_level3_key,
-                      sizeof_bench_sphincs_fast_level3_key, NULL, 0, &key);
-        }
-        else if ((level == 5) && (optim == FAST_VARIANT)) {
-            ret = wc_sphincs_import_private_key(bench_sphincs_fast_level5_key,
-                      sizeof_bench_sphincs_fast_level5_key, NULL, 0, &key);
-        }
-        else if ((level == 1) && (optim == SMALL_VARIANT)) {
-            ret = wc_sphincs_import_private_key(
-                      bench_sphincs_small_level1_key,
-                      sizeof_bench_sphincs_small_level1_key, NULL, 0, &key);
-        }
-        else if ((level == 3) && (optim == SMALL_VARIANT)) {
-            ret = wc_sphincs_import_private_key(
-                      bench_sphincs_small_level3_key,
-                      sizeof_bench_sphincs_small_level3_key, NULL, 0, &key);
-        }
-        else if ((level == 5) && (optim == SMALL_VARIANT)) {
-            ret = wc_sphincs_import_private_key(
-                      bench_sphincs_small_level5_key,
-                      sizeof_bench_sphincs_small_level5_key, NULL, 0, &key);
-        }
+        ret = wc_sphincs_import_private_key(key_buf, key_size, NULL, 0, &key);
 
         if (ret != 0) {
             printf("wc_sphincs_import_private_key failed %d\n", ret);
@@ -13933,26 +14038,10 @@ void bench_sphincsKeySign(byte level, byte optim)
     bench_stats_start(&count, &start);
     do {
         for (i = 0; i < agreeTimes; i++) {
-            if (ret == 0) {
-                if ((level == 1) && (optim == FAST_VARIANT)) {
-                    x = SPHINCS_FAST_LEVEL1_SIG_SIZE;
-                }
-                else if ((level == 3) && (optim == FAST_VARIANT)) {
-                    x = SPHINCS_FAST_LEVEL3_SIG_SIZE;
-                }
-                else if ((level == 5) && (optim == FAST_VARIANT)) {
-                    x = SPHINCS_FAST_LEVEL5_SIG_SIZE;
-                }
-                else if ((level == 1) && (optim == SMALL_VARIANT)) {
-                    x = SPHINCS_SMALL_LEVEL1_SIG_SIZE;
-                }
-                else if ((level == 3) && (optim == SMALL_VARIANT)) {
-                    x = SPHINCS_SMALL_LEVEL3_SIG_SIZE;
-                }
-                else if ((level == 5) && (optim == SMALL_VARIANT)) {
-                    x = SPHINCS_SMALL_LEVEL5_SIG_SIZE;
-                }
+            printf("wc_sphincs_sign_msg/%d\n", i);
 
+            if (ret == 0) {
+                word32 x = signature_size;
                 ret = wc_sphincs_sign_msg(msg, sizeof(msg), sig, &x, &key, GLOBAL_RNG);
                 if (ret != 0) {
                     printf("wc_sphincs_sign_msg failed\n");
@@ -13968,14 +14057,8 @@ void bench_sphincsKeySign(byte level, byte optim)
        );
 
     if (ret == 0) {
-        if (optim == FAST_VARIANT) {
-            bench_stats_asym_finish("SPHINCS-FAST", level, desc[4], 0, count,
-                                    start, ret);
-        }
-        else {
-            bench_stats_asym_finish("SPHINCS-SMALL", level, desc[4], 0, count,
-                                    start, ret);
-        }
+        bench_stats_asym_finish(variant_name, level, desc[4], 0, count,
+                                start, ret);
     #ifdef MULTI_VALUE_STATISTICS
         bench_multi_value_stats(max, min, sum, squareSum, runs);
     #endif
@@ -13986,10 +14069,10 @@ void bench_sphincsKeySign(byte level, byte optim)
     bench_stats_start(&count, &start);
     do {
         for (i = 0; i < agreeTimes; i++) {
+            printf("wc_sphincs_verify_msg/%d\n", i);
             if (ret == 0) {
                 int verify = 0;
-                ret = wc_sphincs_verify_msg(sig, x, msg, sizeof(msg), &verify,
-                                            &key);
+                ret = wc_sphincs_verify_msg(sig, signature_size, msg, sizeof(msg), &verify, &key);
 
                 if (ret != 0 || verify != 1) {
                     printf("wc_sphincs_verify_msg failed %d, verify %d\n",
@@ -14007,14 +14090,8 @@ void bench_sphincsKeySign(byte level, byte optim)
        );
 
     if (ret == 0) {
-        if (optim == FAST_VARIANT) {
-            bench_stats_asym_finish("SPHINCS-FAST", level, desc[5], 0, count,
-                                    start, ret);
-        }
-        else {
-            bench_stats_asym_finish("SPHINCS-SMALL", level, desc[5], 0, count,
-                                    start, ret);
-        }
+        bench_stats_asym_finish(variant_name, level, desc[5], 0, count,
+                                start, ret);
     #ifdef MULTI_VALUE_STATISTICS
         bench_multi_value_stats(max, min, sum, squareSum, runs);
     #endif

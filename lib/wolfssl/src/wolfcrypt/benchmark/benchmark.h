@@ -131,7 +131,15 @@ void bench_blake2s(void);
 void bench_pbkdf2(void);
 void bench_falconKeySign(byte level);
 void bench_dilithiumKeySign(byte level);
-void bench_sphincsKeySign(byte level, byte optim);
+
+typedef enum {
+    SPHINCS_FAST_SHA2,
+    SPHINCS_FAST_SHAKE,
+    SPHINCS_SMALL_SHA2,
+    SPHINCS_SMALL_SHAKE
+} sphincs_variant_t;
+
+void bench_sphincsKeySign(byte level, sphincs_variant_t variant);
 
 void bench_stats_print(void);
 

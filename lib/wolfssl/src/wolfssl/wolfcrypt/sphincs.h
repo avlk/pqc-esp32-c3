@@ -80,6 +80,9 @@
 #define FAST_VARIANT    1
 #define SMALL_VARIANT   2
 
+#define SPHINCS_SHAKE   1
+#define SPHINCS_SHA2    2
+
 /* Structs */
 
 struct sphincs_key {
@@ -87,6 +90,7 @@ struct sphincs_key {
     bool prvKeySet;
     byte level; /* 1,3 or 5 */
     byte optim; /* FAST_VARIANT or SMALL_VARIANT */
+    byte hash; /* SHAKE or SHA2 */
     byte p[SPHINCS_MAX_PUB_KEY_SIZE];
     byte k[SPHINCS_MAX_PRV_KEY_SIZE];
 };
