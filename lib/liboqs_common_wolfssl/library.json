@@ -1,0 +1,28 @@
+{
+    "name": "liboqs_common_wolfssl",
+    "version": "0.10.1",
+    "build": {
+        "flags": [
+            "-I.",
+            "-I../liboqs/src/common/pqclean_shims",
+            "-I../liboqs/src/common/sha3/xkcp_low/KeccakP-1600/plain-64bits/",
+            "-I../wolfssl/src",
+            "-DOQS_HAVE_GETENTROPY",
+            "-ffunction-sections",
+            "-fdata-sections"
+        ],
+        "srcDir": ".",
+        "srcFilter": [
+            "+<../liboqs/src/common/common.c>",
+            "+<../liboqs/src/common/pqclean_shims/*.c>",
+            "+<../liboqs/src/common/rand/*.c>",
+            "+<../../liboqs/src/common/aes/aes.c>",
+            "+<../liboqs/src/common/aes/aes_c.c>",
+            "+<src/sha2_wolfssl.c>",
+            "+<../liboqs/src/common/sha3/xkcp_sha3.c>",
+            "+<../liboqs/src/common/sha3/xkcp_sha3x4.c>",
+            "+<../liboqs/src/common/sha3/xkcp_low/*>",
+            "-<../liboqs/src/common/sha3/xkcp_low/*/avx2/*>"
+        ]
+    }
+}

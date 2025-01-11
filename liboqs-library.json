@@ -21,7 +21,7 @@
     "dependencies": 
     [
         {
-            "name": "liboqs_common",
+            "name": "liboqs_common_wolfssl",
             "version": "^0.10.1"
         },
         {
